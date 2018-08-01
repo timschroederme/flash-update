@@ -1,6 +1,4 @@
 #!/bin/sh
-# Script is a modified version of http://hints.macworld.com/article.php?story=20110503171510369
-# and https://jamfnation.jamfsoftware.com/discussion.html?id=7658
 
 # Check if we are running as root
 me=`basename "$0"`
@@ -21,30 +19,30 @@ currentinstalledver=`defaults read "/Library/Internet Plug-Ins/Flash Player.plug
 
 # Compare the two versions, if they are different or Flash is not present, then download and install the new version.
 if [ "${currentinstalledver}" != "${latestver}" ]; then
-	echo "`date`: Current Flash version: ${currentinstalledver}" 
-	echo "`date`: Available Flash version: ${latestver}" 
-    echo "`date`: Downloading newer version." 
+	echo "`date`: Current Flash version: ${currentinstalledver}"
+	echo "`date`: Available Flash version: ${latestver}"
+    echo "`date`: Downloading newer version."
     curl -s -o `dirname $0`/flash.dmg $url
-   	echo "`date`: Mounting installer disk image." 
+   	echo "`date`: Mounting installer disk image."
     hdiutil attach `dirname $0`/flash.dmg -nobrowse -quiet
-    echo "`date`: Installing..." 
-    installer -pkg /Volumes/Flash\ Player/Install\ Adobe\ Flash\ Player.app/Contents/Resources/Adobe\ Flash\ Player.pkg -target / 
+    echo "`date`: Installing..."
+    installer -pkg /Volumes/Flash\ Player/Install\ Adobe\ Flash\ Player.app/Contents/Resources/Adobe\ Flash\ Player.pkg -target /
     sleep 2
-    echo "`date`: Unmounting installer disk image." 
+    echo "`date`: Unmounting installer disk image."
     hdiutil detach $(df | grep ${volname} | awk '{print $1}') -quiet
     sleep 2
-    echo "`date`: Deleting disk image." 
+    echo "`date`: Deleting disk image."
     rm `dirname $0`/${dmgfile}
     newlyinstalledver=`defaults read "/Library/Internet Plug-Ins/Flash Player.plugin/Contents/version" CFBundleShortVersionString`
     if [ "${latestver}" = "${newlyinstalledver}" ]; then
-    	echo "`date`: SUCCESS: Flash has been updated to version ${newlyinstalledver}" 
+    	echo "`date`: SUCCESS: Flash has been updated to version ${newlyinstalledver}"
 	else
-    	echo "`date`: ERROR: Flash update unsuccessful, version remains at ${currentinstalledver}." 
-        echo "--" 
+    	echo "`date`: ERROR: Flash update unsuccessful, version remains at ${currentinstalledver}."
+        echo "--"
 	fi
 
-# If Flash is up to date already, just log it and exit.       
+# If Flash is up to date already, just log it and exit.
 else
-	echo "`date`: Flash is already up to date, running ${currentinstalledver}." 
-    echo "--" 
+	echo "`date`: Flash is already up to date, running ${currentinstalledver}."
+    echo "--"
 fi
